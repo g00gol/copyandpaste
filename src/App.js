@@ -1,25 +1,98 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState, useEffect } from "react";
 
-function App() {
+export default function App() {
+  const [edit, setEdit] = useState(false);
+  const [input, setInput] = useState("");
+  const [copied, setCopied] = useState(false);
+
+  const current = new Date();
+  const date = `${current.getDate()}/${
+    current.getMonth() + 1
+  }/${current.getFullYear()}`;
+
+  function handleInput(event) {
+    if (JSON.parse(localStorage.getItem("author_input")) === "") {
+      console.log(input);
+      console.log("No data");
+      setEdit(true);
+      return;
+    }
+    if (!event) {
+      return;
+    }
+    console.log(event.target.value);
+    setInput(event.target.value);
+  }
+
+  function handleCopy() {
+    const str = `/*******************************************************************************\n * Author  : ${input}\n * Date    : ${date}\n * Pledge  : I pledge my honor that I have abided by the Stevens Honor System.\n******************************************************************************/`;
+    navigator.clipboard.writeText(str).then(() => console.log("copied"));
+  }
+
+  useEffect(() => {
+    setInput(JSON.parse(localStorage.getItem("author_input")));
+    handleInput();
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+    <div className="flex w-screen h-screen bg-slate-800 text-white justify-center items-center">
+      <code id="input-container" className="text-gray-400 flex flex-col">
+        <div
+          className={
+            "m-6 p-2 space-y-6" +
+            (edit
+              ? ""
+              : " " +
+                "cursor-pointer hover:bg-slate-900 transition-color duration-300")
+          }
+          onClick={edit ? null : () => handleCopy()}
         >
-          Learn React
-        </a>
-      </header>
+          <p>
+            /*******************************************************************************
+          </p>
+          <span className="flex">
+            <p> * Author&nbsp;&nbsp;:&nbsp;</p>
+            {edit ? (
+              <input
+                className="bg-transparent text-gray-400 placeholder-gray-300 focus:outline-none focus:text-gray-300"
+                type="text"
+                placeholder={input === "" ? "Your name" : input}
+                onChange={(e) => handleInput(e)}
+              />
+            ) : (
+              <p>{input}</p>
+            )}
+          </span>
+          <p> * Date&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{date}</p>
+          <p>
+            {" "}
+            * Pledge&nbsp;&nbsp;:&nbsp;I pledge my honor that I have abided by
+            the Stevens Honor System.
+          </p>
+          <p>
+            {" "}
+            ******************************************************************************/
+          </p>
+        </div>
+
+        <span className="space-x-4 mx-6 p-2">
+          {/* <button onClick={() => handleCopy()}>Copy</button> */}
+
+          {edit ? (
+            <button
+              onClick={() => {
+                setEdit(false);
+                localStorage.setItem("author_input", JSON.stringify(input));
+              }}
+              className="text-gray-300"
+            >
+              Save
+            </button>
+          ) : (
+            <button onClick={() => setEdit(true)}>Edit</button>
+          )}
+        </span>
+      </code>
     </div>
   );
 }
-
-export default App;
