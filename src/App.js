@@ -14,12 +14,6 @@ export default function App() {
   }/${current.getFullYear()}`;
 
   function handleInput(event) {
-    if (JSON.parse(localStorage.getItem("author_input")) === "") {
-      console.log(input);
-      console.log("No data");
-      setEdit(true);
-      return;
-    }
     if (!event) {
       return;
     }
@@ -46,6 +40,14 @@ export default function App() {
   useEffect(() => {
     setCopied(false);
     setInput(JSON.parse(localStorage.getItem("author_input")));
+
+    const localInput = JSON.parse(localStorage.getItem("author_input"));
+    if (localInput === "" || localInput === null) {
+      console.log(input);
+      console.log("No data");
+      setEdit(true);
+      return;
+    }
     handleInput();
   }, []);
 
@@ -90,7 +92,11 @@ export default function App() {
               <p> * Author&nbsp;&nbsp;:&nbsp;</p>
               {edit ? (
                 <input
-                  className="bg-transparent text-gray-400 placeholder-gray-300 focus:outline-none focus:text-gray-300"
+                  className={
+                    "bg-transparent text-gray-400 placeholder-gray-300 focus:outline-none focus:text-gray-300" +
+                    " " +
+                    (input ? "" : "bg-gray-400")
+                  }
                   type="text"
                   placeholder={input === "" ? "Your name" : input}
                   onChange={(e) => handleInput(e)}
